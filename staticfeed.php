@@ -404,7 +404,7 @@ jQuery(document).ready(function($) {
 // Add static feed to the WordPress menu
 function staticfeed_admin()
 {
-	add_options_page( __('Static Feed'), __('Static Feed'), 9, basename(__FILE__), 'staticfeed_admin_page');
+	add_options_page( __('Static Feed'), __('Static Feed'), 'manage_options', basename(__FILE__), 'staticfeed_admin_page');
 }
 
 add_action('admin_menu','staticfeed_admin',1);
