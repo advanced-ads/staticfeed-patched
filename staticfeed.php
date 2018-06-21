@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Static Feed
+Plugin Name: Static Feed (patched by webgilde)
 Plugin URI: http://www.pluginspodcast.com/plugins/staticfeed/
 Description: Improves the performance of your site by serving your feeds as static (XML) files.
-Author: Angelo Mandato, host of Plugins, The WordPress Plugins Podcast
+Author: Angelo Mandato, patched by Thomas Maier, webgilde for latest WP version
 Version: 2.0
 Author URI: http://www.pluginspodcast.com/
 */ 
