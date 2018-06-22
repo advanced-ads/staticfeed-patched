@@ -94,6 +94,11 @@ If you plan on serving Permalink Feeds (example.com/feed/), create a folder call
 
 == Changelog ==
 
+= untagged =
+
+* removed undefined `POWERPRESS_VERSION` constant since it doesn’t seem needed
+* fixed deprecated use of user role
+
 = 2.0 =
 * Released on 02/18/2010
 * First public release of the Static Feed plugin

@@ -545,7 +545,7 @@ function staticfeed_get_feed_content($feed_url)
 	if( function_exists('wp_remote_get') ) // Lets us specify the user agent and get a real error message if failure
 	{
 		$options = array();
-		$options['user-agent'] = 'StaticFeed WordPress Plugin/'.POWERPRESS_VERSION;
+		$options['user-agent'] = 'StaticFeed WordPress Plugin/';
 		$response = wp_remote_get( $feed_url, $options );
 		
 		if ( is_wp_error( $response ) )
