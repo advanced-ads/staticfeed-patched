@@ -20,11 +20,19 @@ if( !defined('STATICFEED_DEFAULT_CONTENT_TYPE') ) // Set to false if you don't w
 	define('STATICFEED_DEFAULT_CONTENT_TYPE', 'application/rss+xml');
 
 // Actions where we need to refresh the static feeds
-function staticfeed_edit_post($not_used)
+function staticfeed_edit_post($id)
 {
-	if( !empty($GLOBALS['g_staticfeed_refreshed']) )
-		staticfeed_refresh_all();
-	$GLOBALS['g_staticfeed_refreshed'] = true;
+    try{
+        $type = get_post_type($id);
+        if ($type === "post"){
+            if( !empty($GLOBALS['g_staticfeed_refreshed']) ){
+                staticfeed_refresh_all();
+            }
+            $GLOBALS['g_staticfeed_refreshed'] = true;
+        }
+    } catch (Exception $e){
+        //just in case something unexpected happens...
+    }
 }
 
 add_action('publish_post', 'staticfeed_edit_post');
