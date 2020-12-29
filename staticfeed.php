@@ -503,13 +503,14 @@ function staticfeed_stripslashes( $data ) {
 		return stripslashes( $data );
 	}
 
-	while ( list($key,$value) = each( $data ) ) {
+	foreach( $data as $key => $value ) {
 		if ( is_array( $value ) ) {
 			$data[ $key ] = staticfeed_stripslashes( $value );
 		} else {
 			$data[ $key ] = stripslashes( $value );
 		}
 	}
+
 	reset( $data );
 	return $data;
 }
