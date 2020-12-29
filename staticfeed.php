@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: Static Feed (patched by webgilde)
+Plugin Name: Static Feed (patched by Advanced Ads)
 Plugin URI: http://www.pluginspodcast.com/plugins/staticfeed/
 Description: Improves the performance of your site by serving your feeds as static (XML) files.
-Author: Angelo Mandato, patched by Thomas Maier, webgilde for latest WP version
+Author: Angelo Mandato, patched by Thomas Maier, Advanced Ads GmbH for latest WP version
 Version: 2.0
 Author URI: http://www.pluginspodcast.com/
 */ 
