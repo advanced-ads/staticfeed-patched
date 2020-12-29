@@ -90,14 +90,23 @@ Note: This plugin does not add HTTP Compression to your web server. HTTP Compres
 If you plan on serving Permalink Feeds (example.com/feed/), create a folder called 'staticfeed' in your wp-content folder and make sure your web server can write files to the newly created wp-content/staticfeed folder.
 
 == Screenshots ==
+
 1. Static Feed settings page
 
 == Changelog ==
 
+= untagged =
+
+* removed undefined `POWERPRESS_VERSION` constant since it doesn’t seem needed
+* replaced `each` function with `foreach`
+* fixed deprecated use of user role
+
 = 2.0 =
+
 * Released on 02/18/2010
 * First public release of the Static Feed plugin
 * Adds support for serving static feeds through Permalinks via .htaccess ModRewrite rules
 
 = 1.0 =
+
 * First private release of the Static Feed plugin
