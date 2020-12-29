@@ -58,14 +58,14 @@ For the latest information please visit the website.
 
 = Why Static Feeds? =
 It's all about web server performance. It is much more efficient for a web server to serve a static XML file than to dynamically re-create the feed in PHP/MySQL upon each request. Since a blog feed doesn't change as often as it is downloaded, it makes sense to serve this information as a static file.
- 
+
 = What else do you recommend?  =
 
 Combine this plugin with a web server configured with compression ([mod_deflate](http://httpd.apache.org/docs/2.0/mod/mod_deflate.html) in Apache) and a PHP Accelerator (such as APC), and you have yourself a real WordPress serving powerhouse!
 
 = Will this plugin work with other caching plugins? =
 It may work, but I wouldn't guarantee it. If you're using this plugin with another caching plugin without problems, let me know and I'll start a list of Static Feed compatible Caching plugins.
- 
+
 = Do I need this plugin if I am already using a caching plugin? =
 Most likely no since the caching plugin may be doing something similar.
 
@@ -81,15 +81,16 @@ Web server Compression is when the web server compresses the data before returni
 You can test your site and feeds for compression by using the [What's My IP HTTP Compression](http://www.whatsmyip.org/http_compression/) test.
 
 Note: This plugin does not add HTTP Compression to your web server. HTTP Compression is a feature your web hosting providor or administrator would configure.
- 
+
 == Installation ==
 1. Copy the entire directory from the downloaded zip file into the /wp-content/plugins/ folder.
 2. Activate the "Static Feed" plugin in the Plugin Management page.
 3. Configure Static Feed by going to the **Settings** > **Static Feed** page.
 
 If you plan on serving Permalink Feeds (example.com/feed/), create a folder called 'staticfeed' in your wp-content folder and make sure your web server can write files to the newly created wp-content/staticfeed folder.
-		
+
 == Screenshots ==
+
 1. Static Feed settings page
 
 == Changelog ==
@@ -97,18 +98,15 @@ If you plan on serving Permalink Feeds (example.com/feed/), create a folder call
 = untagged =
 
 * removed undefined `POWERPRESS_VERSION` constant since it doesn’t seem needed
+* replaced `each` function with `foreach`
 * fixed deprecated use of user role
 
 = 2.0 =
+
 * Released on 02/18/2010
 * First public release of the Static Feed plugin
 * Adds support for serving static feeds through Permalinks via .htaccess ModRewrite rules
 
 = 1.0 =
+
 * First private release of the Static Feed plugin
-
-== Contributors ==
-Angelo Mandato, host of the [Plugins Podcast](http://www.pluginspodcast.com) - Plugin author
-
-== Follow us on Twitter == 
-@[pluginspodcast](http://twitter.com/pluginspodcast)
