@@ -90,7 +90,7 @@ function staticfeed_admin_init() {
 
 			if ( $success ) {
 				// Make all the static files...
-				while ( list($feed_slug, $feed_settings) = each( $Settings ) ) {
+				foreach( $Settings as $feed_slug => $feed_settings ) {
 					if ( ! is_array( $feed_settings ) ) {
 						continue; // Skip this, it's a setting
 					}
@@ -107,6 +107,7 @@ function staticfeed_admin_init() {
 						$GLOBALS['g_staticfeed_error'] .= sprintf( __( 'Unable to write to file %1$s for feed %2$s.' ), $local_file, staticfeed_readable_name( $feed_slug ) );
 					}
 				}
+
 				reset( $Settings );
 			} else {
 				$GLOBALS['g_staticfeed_error'] = sprintf( __( 'Unable to create directory %s.' ), STATICFEED_DIR );
@@ -117,7 +118,7 @@ function staticfeed_admin_init() {
 		$OldSettings = get_option( 'staticfeed_general' );
 		$feed_types  = staticfeed_get_feed_types();
 		if ( $OldSettings ) {
-			while ( list($feed_slug,$feed_name) = each( $feed_types ) ) {
+			foreach( $feed_types as $feed_slug => $feed_name ) {
 				if ( ! isset( $Settings[ $feed_slug ]['enabled'] ) ) {
 					$Settings[ $feed_slug ]['enabled'] = 0;
 				}
@@ -128,7 +129,6 @@ function staticfeed_admin_init() {
 					$Settings[ $feed_slug ]['file'] = $OldSettings[ $feed_slug ]['file'];
 				}
 			}
-			reset( $feed_types );
 
 			// if( !isset($Settings['permalinks']) )
 			// $Settings['permalinks'] = 0;
@@ -274,7 +274,7 @@ function staticfeed_admin_page() {
 			<?php wp_nonce_field( 'update-staticfeed' ); ?>
 			<p style="margin-bottom: 0;"><?php echo __( 'Select the Feeds to be served statically.' ); ?></p>
 			<?php
-			while ( list($feed_slug,$feed_name) = each( $feed_types ) ) {
+			foreach( $feed_types as $feed_slug => $feed_name ) {
 				$display_options = '';
 				if ( empty( $Settings[ $feed_slug ]['enable'] ) ) {
 					$display_options = ' style="display:none;"';
@@ -446,7 +446,7 @@ function staticfeed_get_feed_types() {
 	$default_feed = get_default_feed();
 
 	$feed_types = array();
-	while ( list($null,$value) = each( $wp_rewrite->feeds ) ) {
+	foreach( $wp_rewrite->feeds as $key => $value ) {
 		if ( $value == 'feed' ) {
 			continue; // Skip the default feed as it will be mapped to one of the 4 types
 		}
@@ -525,7 +525,7 @@ function staticfeed_refresh_all( $Settings = false ) {
 	}
 
 	$return = ''; // Lets loop through
-	while ( list($feed_slug,$feed_settings) = each( $Settings ) ) {
+	foreach( $Settings as $feed_slug => $feed_settings ) {
 		if ( ! is_array( $feed_settings ) ) {
 			continue; // This is just a setting for Static Feed plugin, it's not an actual feed...
 		}
@@ -565,7 +565,6 @@ function staticfeed_refresh_all( $Settings = false ) {
 			}
 		}
 	}
-	reset( $Settings );
 
 	return $return;
 }
@@ -630,7 +629,7 @@ function staticfeed_get_rewrite_rules( $home_root = false ) {
 	$permalink_structure = $wp_rewrite->get_feed_permastruct();
 	$rules               = '';
 	/* Loop through static feeds here: */
-	while ( list($feed_slug,$feed_settings) = each( $Settings ) ) {
+	foreach( $Settings as $feed_slug => $feed_settings ) {
 		if ( ! is_array( $feed_settings ) ) {
 			continue; // This is just a setting for Static Feed plugin, it's not an actual feed...
 		}
