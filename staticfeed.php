@@ -1,14 +1,14 @@
 <?php
-/*
-Plugin Name: Static Feed (patched by webgilde)
-Plugin URI: http://www.pluginspodcast.com/plugins/staticfeed/
-Description: Improves the performance of your site by serving your feeds as static (XML) files.
-Author: Angelo Mandato, patched by Thomas Maier, webgilde for latest WP version
-Version: 2.0
-Author URI: http://www.pluginspodcast.com/
-*/
+/**
+ * Plugin Name: Static Feed (patched by webgilde)
+ * Plugin URI: http://www.pluginspodcast.com/plugins/staticfeed/
+ * Description: Improves the performance of your site by serving your feeds as static (XML) files.
+ * Author: Angelo Mandato, patched by Thomas Maier, webgilde for latest WP version
+ * Version: 2.0
+ * Author URI: http://www.pluginspodcast.com/
+ */
 
-define( 'STATICFEED_VERSION', '2.0' );
+const STATICFEED_VERSION = '2.0';
 $GLOBALS['g_staticfeed_disable'] = false;
 
 // Set these settings in your wp-config.php if you want to override them. All three of these settings apply to the Permalinks option
@@ -23,7 +23,7 @@ if ( ! defined( 'STATICFEED_DEFAULT_CONTENT_TYPE' ) ) { // Set to false if you d
 }
 
 // Actions where we need to refresh the static feeds
-function staticfeed_edit_post( $id ) {
+function staticfeed_edit_post( $id ): void {
 	try {
 		$type = get_post_type( $id );
 		if ( $type === 'post' ) {
@@ -58,7 +58,7 @@ function staticfeed_feed_link( $output, $feed ) {
 	}
 
 	// Make sure we don't handle the rss2 comments feed by accident
-	if ( ! $feed && false != strpos( $output, '/comments/' ) ) {
+	if ( ! $feed && strpos( $output, '/comments/' ) ) {
 		$feed = 'comments_rss2';
 	} elseif ( ! $feed ) {
 		$feed = 'rss2';
@@ -74,7 +74,7 @@ function staticfeed_feed_link( $output, $feed ) {
 add_filter( 'feed_link', 'staticfeed_feed_link', 10, 2 );
 
 // Save settings here
-function staticfeed_admin_init() {
+function staticfeed_admin_init(): void {
 	global $wp_rewrite;
 
 	if ( ! empty( $_POST['action'] ) && $_POST['action'] == 'staticfeed_save' ) {
@@ -175,7 +175,7 @@ add_action( 'init', 'staticfeed_admin_init' );
 function staticfeed_admin_page() {
 	global $wp_rewrite;
 
-	// Hepful info: http://codex.wordpress.org/WordPress_Feeds
+	// Helpful info: http://codex.wordpress.org/WordPress_Feeds
 	$default_feed = get_default_feed();
 	$feed_types   = staticfeed_get_feed_types();
 	$Settings     = get_option( 'staticfeed_general' );
@@ -188,7 +188,7 @@ function staticfeed_admin_page() {
 	}
 
 	?>
-	<script language="javascript" type="text/javascript">
+	<script>
 
 		var g_staticfeed_root_url = '<?php echo get_option( 'siteurl' ); ?>/';
 		var g_staticfeed_root_dir = '<?php echo str_replace( '\\', '/', ABSPATH ); ?>';
@@ -515,7 +515,7 @@ function staticfeed_stripslashes( $data ) {
 	return $data;
 }
 
-function staticfeed_refresh_all( $Settings = false ) {
+function staticfeed_refresh_all( $Settings = false ): ?string {
 	if ( $Settings == false ) {
 		$Settings = get_option( 'staticfeed_general' );
 	}
@@ -569,7 +569,7 @@ function staticfeed_refresh_all( $Settings = false ) {
 	return $return;
 }
 
-function staticfeed_get_feed_content( $feed_url ) {
+function staticfeed_get_feed_content( $feed_url ): array {
 	if ( function_exists( 'wp_remote_get' ) ) { // Lets us specify the user agent and get a real error message if failure
 		$options               = array();
 		$options['user-agent'] = 'StaticFeed WordPress Plugin/';
@@ -601,7 +601,7 @@ function staticfeed_get_feed_content( $feed_url ) {
 }
 
 // Get the root directory of web site
-function staticfeed_get_home_root() {
+function staticfeed_get_home_root(): string {
 	$home_root = parse_url( get_option( 'home' ) );
 	if ( isset( $home_root['path'] ) ) {
 		return trailingslashit( $home_root['path'] );
@@ -610,7 +610,7 @@ function staticfeed_get_home_root() {
 }
 
 // Generates the ModRewrite rules for inclusion in the .htaccess file
-function staticfeed_get_rewrite_rules( $home_root = false ) {
+function staticfeed_get_rewrite_rules( $home_root = false ): string {
 	global $wp_rewrite;
 
 	$Settings = get_option( 'staticfeed_general' );
@@ -682,7 +682,7 @@ function staticfeed_get_rewrite_rules( $home_root = false ) {
 }
 
 // Writes the feed content to a file with error reporting on failure
-function staticfeed_save_feed_content( $local_file, $content ) {
+function staticfeed_save_feed_content( $local_file, $content ): array {
 	if ( ! file_exists( $local_file ) ) {
 		if ( ! @touch( $local_file ) ) {
 			return array(
@@ -721,7 +721,7 @@ function staticfeed_save_feed_content( $local_file, $content ) {
 }
 
 // Returns the WordPress original permalink
-function staticfeed_feed_link_orig( $feed_slug ) {
+function staticfeed_feed_link_orig( $feed_slug ): string {
 	$GLOBALS['g_staticfeed_disable'] = true;
 	$feed_url                        = get_feed_link( $feed_slug );
 	$GLOBALS['g_staticfeed_disable'] = false;
@@ -729,7 +729,7 @@ function staticfeed_feed_link_orig( $feed_slug ) {
 }
 
 // Returns a readable name of the feed slug
-function staticfeed_readable_name( $name ) {
+function staticfeed_readable_name( $name ): string {
 	$name = str_replace( '-', ' ', $name );
 	$name = str_replace( 'rss', 'RSS', $name );
 	$name = str_replace( 'rdf', 'RDF', $name );
