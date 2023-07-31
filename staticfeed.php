@@ -160,7 +160,7 @@ function staticfeed_admin_init(): void {
 				$wp_rewrite->wp_rewrite_rules();
 				save_mod_rewrite_rules();
 				$GLOBALS['g_staticfeed_status'] .= '<br />';
-				$GLOBALS['g_staticfeed_status'] .= __( 'Permalink structure and .htaccess updated.' );
+				$GLOBALS['g_staticfeed_status'] .= esc_html__( 'Permalink structure and .htaccess updated.', 'staticfeed' );
 			} else {
 				// Let the user know they need to update their .htaccess file
 				$GLOBALS['g_staticfeed_htaccess'] = true;
@@ -184,13 +184,13 @@ function staticfeed_admin_page() {
 		if ( ! empty( $GLOBALS['g_staticfeed_error'] ) ) {
 			$GLOBALS['g_staticfeed_error'] .= '<br />';
 		}
-		$GLOBALS['g_staticfeed_error'] .= __( 'Your server must have either the php.ini setting \'allow_url_fopen\' enabled or the PHP cURL library installed to use this plugin.' );
+		$GLOBALS['g_staticfeed_error'] .= __( 'Your server must have either the php.ini setting \'allow_url_fopen\' enabled or the PHP cURL library installed to use this plugin.', 'staticfeed' );
 	}
 
 	?>
 	<script>
 
-		var g_staticfeed_root_url = '<?php echo get_option( 'siteurl' ); ?>/';
+		var g_staticfeed_root_url = '<?php echo esc_url( get_option( 'siteurl' ) ); ?>/';
 		var g_staticfeed_root_dir = '<?php echo str_replace( '\\', '/', ABSPATH ); ?>';
 
 		jQuery(document).ready(function($) {
@@ -235,17 +235,35 @@ function staticfeed_admin_page() {
 
 	</script>
 	<div class="wrap">
-		<h2><?php echo __( 'Static Feed' ); ?></h2>
+		<h2><?php echo __( 'Static Feed', 'staticfeed' ); ?></h2>
 		<?php
 		if ( ! empty( $GLOBALS['g_staticfeed_status'] ) ) {
 			echo '<div class="updated" style="margin: 10px; line-height: 26px; font-size: 12px; border-width: 1px; border-style: solid; ">';
-			echo $GLOBALS['g_staticfeed_status'];
+			echo wp_kses(
+				$GLOBALS['g_staticfeed_status'],
+				[
+					'br' => [],
+					'a' => [
+						'href'   => [],
+						'target' => [],
+					],
+				]
+			);
 			echo "</div>\n";
 		}
 
 		if ( ! empty( $GLOBALS['g_staticfeed_error'] ) ) {
 			echo '<div class="error" style="margin: 10px; line-height: 26px; font-size: 12px; border-width: 1px; border-style: solid; font-weight: bold; ">';
-			echo $GLOBALS['g_staticfeed_error'];
+			echo wp_kses(
+				$GLOBALS['g_staticfeed_error'],
+				[
+					'br' => [],
+					'a' => [
+						'href'   => [],
+						'target' => [],
+					],
+				]
+			);
 			echo "</div>\n";
 		}
 		?>
@@ -263,7 +281,7 @@ function staticfeed_admin_page() {
 					<p style="margin: 0;"><textarea rows="6" class="large-text readonly" name="rules" id="rules" readonly="readonly" style="background-color: #ECECEC;"><?php echo esc_html( $wp_rewrite->mod_rewrite_rules() ); ?></textarea></p>
 					<p id="staticfeed_rewrite_rules_link" style="text-align: right; margin: 0 10px;"><a href="javascript:void()" onclick="jQuery('#staticfeed_rewrite_rules_link').css('display','none');jQuery('#staticfeed_rewrite_rules').css('display','block');"><?php echo __( 'View only the rewrite rules added by Static Feed' ); ?></a>
 					<p id="staticfeed_rewrite_rules" style="display:none;">
-						<?php echo sprintf( __( 'Specific rules added by Static Feed. These rules are placed immediately below the "RewriteBase %s" line.' ), staticfeed_get_home_root() ); ?>
+						<?php echo sprintf( esc_html__( 'Specific rules added by Static Feed. These rules are placed immediately below the "RewriteBase %s" line.', 'staticfeed' ), esc_attr( staticfeed_get_home_root() ) ); ?>
 						<textarea rows="6" class="large-text readonly" name="staticfeed_rules" id="staticfeed_rules" readonly="readonly" style="background-color: #ECECEC;"><?php echo esc_html( staticfeed_get_rewrite_rules() ); ?></textarea>
 					</p>
 				</form>
@@ -275,52 +293,52 @@ function staticfeed_admin_page() {
 			<p style="margin-bottom: 0;"><?php echo __( 'Select the Feeds to be served statically.' ); ?></p>
 			<?php
 			foreach( $feed_types as $feed_slug => $feed_name ) {
-				$display_options = '';
+				$display_hide = false;
 				if ( empty( $Settings[ $feed_slug ]['enable'] ) ) {
-					$display_options = ' style="display:none;"';
+					$display_hide = true;
 				}
 				?>
 				<table class="form-table">
 					<tr>
 						<th>
-							<input type="checkbox" name="Settings[<?php echo $feed_slug; ?>][enable]" id="staticfeed_enable_<?php echo $feed_slug; ?>" class="staticfeed_cb" value="1" 
+							<input type="checkbox" name="Settings[<?php echo esc_attr( $feed_slug ); ?>][enable]" id="staticfeed_enable_<?php echo esc_attr( $feed_slug ); ?>" class="staticfeed_cb" value="1"
 																			 <?php
-																				if ( empty( $display_options ) ) {
+																				if ( ! $display_hide ) {
 																					echo 'checked';}
 																				?>
 							 />
-							<label for="staticfeed_enable_<?php echo $feed_slug; ?>"><strong><?php echo htmlspecialchars( $feed_name ); ?></strong></label>
+							<label for="staticfeed_enable_<?php echo esc_attr( $feed_slug ); ?>"><strong><?php echo esc_html( $feed_name ); ?></strong></label>
 						</th>
 						<td>
 							<p style="margin: 0;">
-								<a href="<?php echo get_feed_link( $feed_slug ); ?>" target="_blank"><?php echo get_feed_link( $feed_slug ); ?></a>
-								| <a href="http://www.feedvalidator.org/check.cgi?url=<?php echo urlencode( get_feed_link( $feed_slug ) ); ?>" title="<?php echo __( 'Validate' ); ?>" target="_blank"><?php echo __( 'Validate' ); ?></a></p>
+								<a href="<?php echo esc_url( get_feed_link( $feed_slug ) ); ?>" target="_blank"><?php echo esc_url( get_feed_link( $feed_slug ) ); ?></a>
+								| <a href="http://www.feedvalidator.org/check.cgi?url=<?php echo esc_attr( urlencode( get_feed_link( $feed_slug ) ) ); ?>" title="<?php esc_html_e( 'Validate', 'staticfeed' ); ?>" target="_blank"><?php esc_html_e( 'Validate', 'staticfeed' ); ?></a></p>
 						</td>
 					</tr>
 				</table>
-				<div id="staticfeed_settings_<?php echo $feed_slug; ?>" <?php echo $display_options; ?>>
+				<div id="staticfeed_settings_<?php echo esc_attr( $feed_slug ); ?>" <?php echo $display_hide ? 'style="display: none;"' : ''; ?>>
 					<table class="form-table">
 						<?php
 						if ( empty( $Settings['permalinks'] ) ) {
 							?>
 							<tr>
-								<th style="text-align: right;"><label for="staticfeed_url_<?php echo $feed_slug; ?>"><?php echo __( 'Custom Static URL:' ); ?></label></th>
+								<th style="text-align: right;"><label for="staticfeed_url_<?php echo esc_attr( $feed_slug ); ?>"><?php esc_html_e( 'Custom Static URL:', 'staticfeed' ); ?></label></th>
 								<td>
-									<input name="Settings[<?php echo $feed_slug; ?>][url]" id="staticfeed_url_<?php echo $feed_slug; ?>" value="
+									<input name="Settings[<?php echo esc_attr( $feed_slug ); ?>][url]" id="staticfeed_url_<?php echo esc_attr( $feed_slug ); ?>" value="
 																	 <?php
 																		if ( ! empty( $Settings[ $feed_slug ]['url'] ) ) {
-																			echo htmlspecialchars( $Settings[ $feed_slug ]['url'] );}
+																			echo esc_html( $Settings[ $feed_slug ]['url'] );}
 																		?>
 									" class="regular-text staticfeed-url" type="text" style="width: 70%;"><br />
 								</td>
 							</tr>
 							<tr>
-								<th style="text-align: right;"><label for="staticfeed_file_<?php echo $feed_slug; ?>"><?php echo __( 'Local File Path:' ); ?></label></th>
+								<th style="text-align: right;"><label for="staticfeed_file_<?php echo esc_attr( $feed_slug ); ?>"><?php esc_html_e( 'Local File Path:', 'staticfeed' ); ?></label></th>
 								<td>
-									<input name="Settings[<?php echo $feed_slug; ?>][file]" id="staticfeed_file_<?php echo $feed_slug; ?>" value="
+									<input name="Settings[<?php echo esc_attr( $feed_slug ); ?>][file]" id="staticfeed_file_<?php echo esc_attr( $feed_slug ); ?>" value="
 																	 <?php
 																		if ( ! empty( $Settings[ $feed_slug ]['file'] ) ) {
-																			echo htmlspecialchars( $Settings[ $feed_slug ]['file'] );}
+																			echo esc_html( $Settings[ $feed_slug ]['file'] );}
 																		?>
 									" class="regular-text staticfeed-file" type="text" style="width: 70%;" 
 									<?php
@@ -330,16 +348,16 @@ function staticfeed_admin_page() {
 >
 									<?php
 									if ( empty( $Settings['permalinks'] ) ) {
-										$url_suggest  = get_option( 'siteurl' ) . "/{$feed_slug}.xml";
+										$url_suggest  = esc_url( get_option( 'siteurl' ) ) . "/{$feed_slug}.xml";
 										$file_suggest = str_replace( '\\', '/', ABSPATH . "{$feed_slug}.xml" );
 										?>
-										<br /><a id="staticfeed_example_<?php echo $feed_slug; ?>_link" href="javascript:void();" onclick="jQuery('#staticfeed_example_<?php echo $feed_slug; ?>_link').css('display','none');jQuery('#staticfeed_example_<?php echo $feed_slug; ?>').css('display','block');"><?php echo __( 'Show Example' ); ?></a>
-										<p id="staticfeed_example_<?php echo $feed_slug; ?>" style="display: none;">
-											<?php echo __( 'Example URL:' ); ?> <?php echo $url_suggest; ?>
+										<br /><a id="staticfeed_example_<?php echo esc_attr( $feed_slug ); ?>_link" href="javascript:void();" onclick="jQuery('#staticfeed_example_<?php echo esc_attr( $feed_slug ); ?>_link').css('display','none');jQuery('#staticfeed_example_<?php echo esc_attr( $feed_slug ); ?>').css('display','block');"><?php esc_html_e( 'Show Example', 'staticfeed' ); ?></a>
+										<p id="staticfeed_example_<?php echo esc_attr( $feed_slug ); ?>" style="display: none;">
+											<?php esc_html_e( 'Example URL:', 'staticfeed' ); ?> <?php echo esc_url( $url_suggest ); ?>
 											<br />
-											<?php echo __( 'Example File:' ); ?> <?php echo $file_suggest; ?>
+											<?php esc_html_e( 'Example File:', 'staticfeed' ); ?> <?php echo esc_html( $file_suggest ); ?>
 											<br />
-											<a href="#" onclick="jQuery('#staticfeed_url_<?php echo $feed_slug; ?>').val('<?php echo $url_suggest; ?>');jQuery('#staticfeed_file_<?php echo $feed_slug; ?>').val('<?php echo $file_suggest; ?>');return false;"><?php echo __( 'Use Example Above' ); ?></a>
+											<a href="#" onclick="jQuery('#staticfeed_url_<?php echo esc_attr( $feed_slug ); ?>').val('<?php echo esc_url( $url_suggest ); ?>');jQuery('#staticfeed_file_<?php echo esc_attr( $feed_slug ); ?>').val('<?php echo esc_attr( $file_suggest ); ?>');return false;"><?php esc_html_e( 'Use Example Above', 'staticfeed' ); ?></a>
 										</p>
 										<?php
 									}
@@ -351,10 +369,10 @@ function staticfeed_admin_page() {
 						if ( ! empty( $Settings['permalinks'] ) ) {
 							?>
 							<tr>
-								<th style="text-align: right;"><label><?php echo __( 'Bypass URL:' ); ?></label></th>
+								<th style="text-align: right;"><label><?php esc_html_e( 'Bypass URL:', 'staticfeed' ); ?></label></th>
 								<td>
-									<p style="margin: 0;"><a href="<?php echo get_feed_link( $feed_slug ) . ( strstr( get_feed_link( $feed_slug ), '?' ) ? '&staticfeed=no' : '?staticfeed=no' ); ?>" target="_blank"><?php echo get_feed_link( $feed_slug ) . ( strstr( get_feed_link( $feed_slug ), '?' ) ? '&staticfeed=no' : '?staticfeed=no' ); ?></a></p>
-									<?php echo __( 'Use this link to bypass the static feed.' ); ?>
+									<p style="margin: 0;"><a href="<?php echo esc_url( get_feed_link( $feed_slug ) ) . ( strstr( get_feed_link( $feed_slug ), '?' ) ? '&staticfeed=no' : '?staticfeed=no' ); ?>" target="_blank"><?php echo esc_url( get_feed_link( $feed_slug ) ) . ( strstr( get_feed_link( $feed_slug ), '?' ) ? '&staticfeed=no' : '?staticfeed=no' ); ?></a></p>
+									<?php esc_html_e( 'Use this link to bypass the static feed.', 'staticfeed' ); ?>
 								</td>
 							</tr>
 							<?php
@@ -369,21 +387,21 @@ function staticfeed_admin_page() {
 				?>
 				<p>
 				<?php
-				echo __( 'Note: The web server must have write access to the specified local files. 
+				esc_html_e( 'Note: The web server must have write access to the specified local files. 
 	If you encounter errors, please create an empty file saved as the 	feeds filename and 
 	upload it to the apporpriate location on your server.  Then change your file permissions to 
 	the file so the web server (typically Apache) can write to it.  This can be achieved by 
-	setting the file permissions to 660.  At a worst case, you can set the permissions to 666.' );
+	setting the file permissions to 660.  At a worst case, you can set the permissions to 666.', 'staticfeed' );
 				?>
 					</p>
 				<?php
 			}
 			?>
 
-			<h2><?php echo __( 'Additional Settings' ); ?></h2>
+			<h2><?php esc_html_e( 'Additional Settings', 'staticfeed' ); ?></h2>
 			<table class="form-table">
 				<tr>
-					<th> <label for="staticfeedsettings_permalinks"><?php echo __( 'Permalinks' ); ?></label></th>
+					<th> <label for="staticfeedsettings_permalinks"><?php esc_html_e( 'Permalinks', 'staticfeed' ); ?></label></th>
 					<td><p style="margin: 0 0 0 0;">
 							<input type="checkbox" name="Settings[permalinks]" id="staticfeedsettings_permalinks" value="1" 
 							<?php
@@ -391,16 +409,16 @@ function staticfeed_admin_page() {
 								echo 'checked';}
 							?>
 							 />
-							<?php echo __( 'Rewrite Permalink Feed URLs (e.g. example.com/feed/) to Static Feeds.' ); ?>
+							<?php esc_html_e( 'Rewrite Permalink Feed URLs (e.g. example.com/feed/) to Static Feeds.', 'staticfeed' ); ?>
 						</p>
-						(<?php echo __( 'requires write access to your .htaccess file' ); ?>)
+						(<?php esc_html_e( 'requires write access to your .htaccess file', 'staticfeed' ); ?>)
 						<p>
-							<?php echo sprintf( __( 'WARNING: If you have custom rules entered into your .htaccess file, make sure you check the %s option below so this plugin does not overwrite them.' ), '<a href="javascript:void();" onclick="jQuery(\'#staticfeedsettings_update_htaccess_manually\').attr(\'checked\',\'true\');">Manually Update .htaccess</a>' ); ?>
+							<?php echo sprintf( esc_html__( 'WARNING: If you have custom rules entered into your .htaccess file, make sure you check the %s option below so this plugin does not overwrite them.', 'staticfeed' ), '<a href="javascript:void();" onclick="jQuery(\'#staticfeedsettings_update_htaccess_manually\').attr(\'checked\',\'true\');">Manually Update .htaccess</a>' ); ?>
 						</p>
 					</td>
 				</tr>
 				<tr>
-					<th> <label for="staticfeedsettings_update_htaccess_manually"><?php echo __( 'Manually Update .htaccess' ); ?></label></th>
+					<th> <label for="staticfeedsettings_update_htaccess_manually"><?php esc_html_e( 'Manually Update .htaccess', 'staticfeed' ); ?></label></th>
 					<td><p style="margin: 0 0 0 0;">
 							<input type="checkbox" name="Settings[update_htaccess_manually]" id="staticfeedsettings_update_htaccess_manually" value="1" 
 							<?php
@@ -408,22 +426,22 @@ function staticfeed_admin_page() {
 								echo 'checked';}
 							?>
 							 />
-							<?php echo __( 'Static Feed will not automatically update your .htaccess file.' ); ?>
+							<?php esc_html_e( 'Static Feed will not automatically update your .htaccess file.', 'staticfeed' ); ?>
 						</p>
-						(<?php echo __( 'the changes required to your .htaccess file will be displayed upon saving' ); ?>)
+						(<?php esc_html_e( 'the changes required to your .htaccess file will be displayed upon saving', 'staticfeed' ); ?>)
 					</td>
 				</tr>
 			</table>
 
 			<div class="submit">
 				<input type="hidden" name="action" value="staticfeed_save" />
-				<input type="submit" name="info_update" value="<?php echo __( 'Save' ); ?>" />
-				<input type="submit" name="info_update_and_refresh" value="<?php echo __( 'Save and Refresh Static Feeds' ); ?>" />
+				<input type="submit" name="info_update" value="<?php esc_html_e( 'Save' ); ?>" />
+				<input type="submit" name="info_update_and_refresh" value="<?php esc_html_e( 'Save and Refresh Static Feeds', 'staticfeed' ); ?>" />
 			</div>
 
 			<p style="font-size: 85%; text-align: center;">
-				<a href="http://www.pluginspodcast.com/plugins/staticfeed/" title="<?php echo __( 'Static Feed' ); ?>" target="_blank"><?php echo __( 'Static Feed' ); ?></a> <?php echo __( 'version' ); ?> <?php echo STATICFEED_VERSION; ?>
-				<?php echo __( 'by' ); ?> <a href="http://www.pluginspodcast.com/" target="_blank" title="<?php echo __( 'Plugins, The WordPress Plugins Podcast' ); ?>"><?php echo __( 'Plugins, The WordPress Plugins Podcast' ); ?></a> &#8212; <a href="http://twitter.com/PluginsPodcast" target="_blank" title="<?php echo __( 'Follow us on Twitter' ); ?>"><?php echo __( 'Follow us on Twitter' ); ?></a>
+				<a href="http://www.pluginspodcast.com/plugins/staticfeed/" title="<?php esc_html_e( 'Static Feed', 'staticfeed' ); ?>" target="_blank"><?php esc_html_e( 'Static Feed', 'staticfeed' ); ?></a> <?php esc_html_e( 'version' ); ?> <?php echo esc_html( STATICFEED_VERSION ); ?>
+				<?php esc_html_e( 'by' ); ?> <a href="http://www.pluginspodcast.com/" target="_blank" title="<?php esc_html_e( 'Plugins, The WordPress Plugins Podcast', 'staticfeed' ); ?>"><?php esc_html_e( 'Plugins, The WordPress Plugins Podcast', 'staticfeed' ); ?></a> &#8212; <a href="http://twitter.com/PluginsPodcast" target="_blank" title="<?php esc_html_e( 'Follow us on Twitter', 'staticfeed' ); ?>"><?php esc_html_e( 'Follow us on Twitter', 'staticfeed' ); ?></a>
 			</p>
 		</form>
 	</div>
@@ -432,7 +450,7 @@ function staticfeed_admin_page() {
 
 // Add static feed to the WordPress menu
 function staticfeed_admin() {
-	add_options_page( __( 'Static Feed' ), __( 'Static Feed' ), 'manage_options', basename( __FILE__ ), 'staticfeed_admin_page' );
+	add_options_page( esc_html__( 'Static Feed', 'staticfeed' ), esc_html__( 'Static Feed', 'staticfeed' ), 'manage_options', basename( __FILE__ ), 'staticfeed_admin_page' );
 }
 
 add_action( 'admin_menu', 'staticfeed_admin', 1 );
@@ -453,9 +471,9 @@ function staticfeed_get_feed_types() {
 
 		$name = staticfeed_readable_name( $value );
 		if ( $value == $default_feed ) {
-			$name = __( 'Default' ) . ' ' . $name;
+			$name = esc_html__( 'Default', 'staticfeed' ) . ' ' . $name;
 		}
-		$name .= ' ' . __( 'Feed' );
+		$name .= ' ' . esc_html__( 'Feed', 'staticfeed' );
 
 		// Make sure the default feed is always at the top of the list:
 		if ( $value == $default_feed ) {
@@ -521,7 +539,7 @@ function staticfeed_refresh_all( $Settings = false ): ?string {
 	}
 
 	if ( ! $Settings ) {
-		return __( 'Error, no Static Feed settings found.' );
+		return esc_html__( 'Error, no Static Feed settings found.', 'staticfeed' );
 	}
 
 	$return = ''; // Lets loop through
@@ -556,12 +574,12 @@ function staticfeed_refresh_all( $Settings = false ): ?string {
 
 				$saved_status = staticfeed_save_feed_content( $local_file, $content['content'] );
 				if ( $saved_status['success'] ) {
-					$return .= ' &nbsp; &nbsp; ' . sprintf( __( '%1$s feed (%2$s) refreshed successfully.' ), $feed_name, '<a href="' . get_feed_link( $feed_slug ) . '" target="_blank">' . get_feed_link( $feed_slug ) . '</a>' );
+					$return .= ' &nbsp; &nbsp; ' . sprintf( esc_html__( '%1$s feed (%2$s) refreshed successfully.', 'staticfeed' ), $feed_name, '<a href="' . get_feed_link( $feed_slug ) . '" target="_blank">' . get_feed_link( $feed_slug ) . '</a>' );
 				} else {
-					$return .= ' &nbsp; &nbsp; ' . sprintf( __( 'Error with %s feed:' ), $feed_name ) . ' ' . $saved_status['message'];
+					$return .= ' &nbsp; &nbsp; ' . sprintf( esc_html__( 'Error with %s feed:', 'staticfeed' ), $feed_name ) . ' ' . $saved_status['message'];
 				}
 			} else {
-				$return .= ' &nbsp; &nbsp; ' . sprintf( __( 'Error with %s feed:' ), $feed_name ) . ' ' . $content['message'];
+				$return .= ' &nbsp; &nbsp; ' . sprintf( esc_html__( 'Error with %s feed:', 'staticfeed' ), $feed_name ) . ' ' . $content['message'];
 			}
 		}
 	}
@@ -591,7 +609,7 @@ function staticfeed_get_feed_content( $feed_url ): array {
 	if ( $content === false ) {
 		return array(
 			'success' => false,
-			'message' => __( 'Unable to download dynamic feed content.' ),
+			'message' => esc_html__( 'Unable to download dynamic feed content.', 'staticfeed' ),
 		);
 	}
 	return array(
@@ -687,7 +705,7 @@ function staticfeed_save_feed_content( $local_file, $content ): array {
 		if ( ! @touch( $local_file ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'Unable to create file.' ),
+				'message' => esc_html__( 'Unable to create file.', 'staticfeed' ),
 			);
 		}
 		chmod( $local_file, 0666 );
@@ -696,7 +714,7 @@ function staticfeed_save_feed_content( $local_file, $content ): array {
 	if ( ! is_writable( $local_file ) ) {
 		return array(
 			'success' => false,
-			'message' => __( 'Unable to write to file.' ),
+			'message' => esc_html__( 'Unable to write to file.', 'staticfeed' ),
 		);
 	}
 
@@ -704,7 +722,7 @@ function staticfeed_save_feed_content( $local_file, $content ): array {
 	if ( $fp === false ) {
 		return array(
 			'success' => false,
-			'message' => __( 'Unable to open to file.' ),
+			'message' => esc_html__( 'Unable to open to file.', 'staticfeed' ),
 		);
 	}
 
@@ -712,7 +730,7 @@ function staticfeed_save_feed_content( $local_file, $content ): array {
 		fclose( $fp );
 		return array(
 			'success' => false,
-			'message' => __( 'Unable to put content into file.' ),
+			'message' => esc_html__( 'Unable to put content into file.', 'staticfeed' ),
 		);
 	}
 	fclose( $fp );
